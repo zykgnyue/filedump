@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define DF_LINEMAX (16)
+
+unsigned char buf[DF_LINEMAX];
+
+int main(int argc,char * argv[])
+{
+    unsigned char data;
+    unsigned int len=0;
+    unsigned int i=0;
+     /*get arguments from command line*/
+    if(argc<2)
+    {
+        //not input filename 
+        printf("Usage: filedump filename\n");
+        printf("filename is the file that you want to dump its contents!\n");
+        return 1;
+    }
+
+    //open file for binary read
+    FILE *fp;
+    fp=fopen(argv[1],"rb");
+    if(fp==NULL)
+    {
+        //open failed
+        printf("open file %s failed!\n",argv[1]);
+        return(2);
+    }
+    //read file contents and printf
+    while(!feof(fp))
+    {
+        data=fgetc(fp);
+
+        if(len < DF_LINEMAX)
+        {
+            buf[len]=data;
+
+            len++;
+        }else{
+            for(i=0;i<DF_LINEMAX;i++)
+            {
+                printf("%c  ",buf[i]);
+            }
+            printf("\n");
+            for(i=0;i<DF_LINEMAX;i++)
+            {
+                printf("%2.2x ",buf[i]);
+            }
+            printf("\n");
+            for(i=0;i<DF_LINEMAX;i++)
+            {
+                printf("%03d ",buf[i]);
+            }
+            printf("\n");
+            printf("\n");
+            len=0;
+        }
+    }
+    if(len!=0)
+    {
+        //last line output
+        for(i=0;i<DF_LINEMAX;i++)
+        {
+            printf("%c  ",buf[i]);
+        }
+        printf("\n");
+        for(i=0;i<DF_LINEMAX;i++)
+        {
+            printf("%2.2x ",buf[i]);
+        }
+        printf("\n");
+        for(i=0;i<DF_LINEMAX;i++)
+        {
+            printf("%03d ",buf[i]);
+        }
+        printf("\n");
+    }
+    fclose(fp);
+    return 0;
+
+}
