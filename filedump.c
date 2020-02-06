@@ -61,17 +61,36 @@ int main(int argc,char * argv[])
 void printchar(char *bun,int maxlen)
 {
     int i;
+    char tempdata;
+    
     for(i=0;i<maxlen;i++)
     {
-        if(buf[i]=='\n')
+        tempdata=buf[i];
+        switch(tempdata)
         {
-            printf("\\n\t",buf[i]);
-        }
-        else if(buf[i]=='\r')
-        {
-            printf("\\r\t",buf[i]);
-        }else{
-            printf("%c\t",buf[i]);
+        case '\n':/* constant-expression */
+            /* code */
+            printf("\\n\t");
+            break;
+        case '\r':/* constant-expression */
+            /* code */
+            printf("\\r\t");
+            break;
+        case '\a':/* constant-expression */
+            /* code */
+            printf("\\a\t");
+            break;
+        case '\t':/* constant-expression */
+            /* code */
+            printf("\\t\t");
+            break;
+        case '\f':/* constant-expression */
+            /* code */
+            printf("\\f\t");
+            break;
+        default:
+            printf("%c\t",tempdata);
+            break;
         }
     }
     printf("\n");
