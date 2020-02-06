@@ -22,6 +22,7 @@ int main(int argc,char * argv[])
 
     //open file for binary read
     FILE *fp;
+    //file stream open for read binary mode
     fp=fopen(argv[1],"rb");
     if(fp==NULL)
     {

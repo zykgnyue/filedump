@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch LLDB debug",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
+            "args": ["testfile.txt"],
+        },
+        {
             "name": "mingw64 (gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
