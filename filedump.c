@@ -5,7 +5,7 @@
 unsigned char buf[DF_LINEMAX];
 void printchar(char *bun,int maxlen);
 void printfmt(char *bun,int maxlen, char* fmt);
-
+void create_datfile(char * fname);
 
 int main(int argc,char * argv[])
 {
@@ -19,6 +19,8 @@ int main(int argc,char * argv[])
         printf("filename is the file that you want to dump its contents!\n");
         return 1;
     }
+    
+    //create_datfile(argv[1]);
 
     //open file for binary read
     FILE *fp;
@@ -106,4 +108,24 @@ void printfmt(char *bun,int maxlen, char* fmt)
         printf(fmt,buf[i]);
     }
     printf("\n");
+}
+
+void create_datfile(char * fname)
+{
+    unsigned char i=0;
+    FILE *fp;
+    fp=fopen(fname,"wb+");
+    if(fp==NULL)
+    {
+        printf("File creation error!\n");
+        exit(4);
+    }
+
+    for(i=0;i<UCHAR_MAX;i++)
+    {
+        fputc(i,fp);
+    }
+    fputc(i,fp);
+    
+    fclose(fp);
 }
