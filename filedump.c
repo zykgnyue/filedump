@@ -2,10 +2,19 @@
 #include <stdlib.h>
 #define DF_LINEMAX (16)
 
-unsigned char buf[DF_LINEMAX];
-void printchar(char *bun,int maxlen);
-void printfmt(char *bun,int maxlen, char* fmt);
+char buff[DF_LINEMAX];
+void printchar(char *buf,int maxlen);
+void printfmt(char *buf,int maxlen, char* fmt);
 void create_datfile(char * fname);
+void printbin(char *buf,int maxlen);
+char *asciiabl[]={ \
+    "NUL","SOH","STX","ETX","EOT",
+    "ENQ","ACK","BEL","BS","TAB",
+    "LF", "VT", "FF", "CR", "SO",
+    "SI","DEL","DC1","DC2","DC3",
+    "DC4","NAK","SYN","ETB","CAN",
+    "EM","SUB","ESC","FS","GS","RS",
+    "US","<SP>","!"};
 
 int main(int argc,char * argv[])
 {
@@ -43,15 +52,21 @@ int main(int argc,char * argv[])
         //read DF_LINEMAX byte of chars
         if(len < DF_LINEMAX && (!feof(fp)))
         {
-            buf[len]=data;
+            buff[len]=data;
             len++;
         }else{
-            //16byte of chars output
-            printchar(buf,len);    
-            printfmt(buf,len,"%2.2x\t");
-            printfmt(buf,len,"%03d\t");
+            //16byte of chars output            
+            printchar(buff,len);    
+            printfmt(buff,len,"%2.2x\t\t");
+            printfmt(buff,len,"%03d\t\t");
+            printfmt(buff,len,"%03o\t\t");
+            printbin(buff,len);
+
             printf("\n");
             len=0;
+            //revise for lost 0x10 0x20 ...
+            buff[len]=data;
+            len++;
         }
     }
 
@@ -60,7 +75,8 @@ int main(int argc,char * argv[])
 
 }
 
-void printchar(char *bun,int maxlen)
+// print char with visible ascii
+void printchar(char *buf,int maxlen)
 {
     int i;
     char tempdata;
@@ -68,48 +84,49 @@ void printchar(char *bun,int maxlen)
     for(i=0;i<maxlen;i++)
     {
         tempdata=buf[i];
-        switch(tempdata)
+        if(tempdata <0)
         {
-        case '\n':/* constant-expression */
-            /* code */
-            printf("\\n\t");
-            break;
-        case '\r':/* constant-expression */
-            /* code */
-            printf("\\r\t");
-            break;
-        case '\a':/* constant-expression */
-            /* code */
-            printf("\\a\t");
-            break;
-        case '\t':/* constant-expression */
-            /* code */
-            printf("\\t\t");
-            break;
-        case '\f':/* constant-expression */
-            /* code */
-            printf("\\f\t");
-            break;
-        default:
-            printf("%c\t",tempdata);
-            break;
+            printf("%c\t\t",'?');
+        }else if(tempdata<=0x20){
+            //index must unsigned 
+            printf("%s\t\t",asciiabl[(unsigned char)tempdata]);
+        }else{
+            printf("%c\t\t",tempdata);
         }
     }
     printf("\n");
 
 }
 
+// print binary of the char 
+// char with visible ascii
+void printbin(char *buf,int maxlen)
+{
+    int i,j;
+    for(i=0;i<maxlen;i++)
+    {
+        for(j=0;j<8;j++)
+        {
+            printf("%c",(buf[i]&(0x80>>j))!=0?'1':'0');
+        }
+        printf("\t");
+    }
 
-void printfmt(char *bun,int maxlen, char* fmt)
+    printf("\n");
+}
+
+// printf hex oct dec format
+void printfmt(char *buf,int maxlen, char* fmt)
 {
     int i;
     for(i=0;i<maxlen;i++)
     {
-        printf(fmt,buf[i]);
+        printf(fmt,(unsigned char)buf[i]);
     }
     printf("\n");
 }
 
+//create test file with 0x00-0xff
 void create_datfile(char * fname)
 {
     unsigned char i=0;
@@ -126,6 +143,7 @@ void create_datfile(char * fname)
         fputc(i,fp);
     }
     fputc(i,fp);
+    //fputc(i-2,fp);
     
     fclose(fp);
 }
