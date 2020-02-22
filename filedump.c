@@ -71,6 +71,7 @@ int main(int argc,char * argv[])
             len++;
         }
     }
+        
 
     fclose(fp);
     return 0;
