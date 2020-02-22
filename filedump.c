@@ -1,3 +1,5 @@
+//This code is start at 2020/2/12 during crona-virus events
+// 
 #include <stdio.h>
 #include <stdlib.h>
 #define DF_LINEMAX (16)
@@ -91,6 +93,7 @@ void printchar(char *buf,int maxlen)
             //index must unsigned 
             printf("%s\t\t",asciiabl[(unsigned char)tempdata]);
         }else{
+            //0x21==0x7F
             printf("%c\t\t",tempdata);
         }
     }

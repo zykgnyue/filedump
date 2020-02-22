@@ -17,7 +17,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
             "args": [
-                "testfile.txt"
+                "-x",
+                "file.dat"
             ],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
