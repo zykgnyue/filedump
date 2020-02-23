@@ -13,7 +13,7 @@ char *asciiabl[]={ \
     "NUL","SOH","STX","ETX","EOT",
     "ENQ","ACK","BEL","BS","TAB",
     "LF", "VT", "FF", "CR", "SO",
-    "SI","DEL","DC1","DC2","DC3",
+    "SI","DLE","DC1","DC2","DC3",
     "DC4","NAK","SYN","ETB","CAN",
     "EM","SUB","ESC","FS","GS","RS",
     "US","<SP>","!"};
@@ -95,7 +95,16 @@ void printchar(char *buf,int maxlen)
             printf("%s\t\t",asciiabl[(unsigned char)tempdata]);
         }else{
             //0x21==0x7F
-            printf("%c\t\t",tempdata);
+            if(tempdata!=0x7F)
+            {
+                printf("%c\t\t",tempdata);
+            }else
+            {
+                //0x7F DELETE has no display font
+                /* code */
+                printf("%s\t\t","DEL");
+            }
+            
         }
     }
     printf("\n");

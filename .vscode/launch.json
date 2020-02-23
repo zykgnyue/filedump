@@ -9,7 +9,10 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
-            "args": ["testfile.txt"],
+            "args": [
+                "-b",
+                "file.dat"
+            ],
         },
         {
             "name": "mingw64 (gdb) 启动",
@@ -17,7 +20,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
             "args": [
-                "-x",
+                "-b",
                 "file.dat"
             ],
             "stopAtEntry": true,
