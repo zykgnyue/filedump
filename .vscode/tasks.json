@@ -15,35 +15,23 @@
                 "kind": "build",
                 "isDefault": true
             }
-        },
-        {
-            "label": "build",
-            "type": "shell",
-            "command": "msbuild",
-            "args": [
-                "/property:GenerateFullPaths=true",
-                "/t:build",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
+          },
         {
             "type": "shell",
-            "label": "gcc.exe build active file",
-            "command": "C:\\mingw\\mingw64\\bin\\gcc.exe",
+            "label": "cl.exe build active file",
+            "command": "cl.exe",
             "args": [
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+              "/Zi",
+              "/EHsc",
+              "/Fe:",
+              "${fileDirname}\\${fileBasenameNoExtension}.exe",
+              "${file}"
             ],
-            "options": {
-                "cwd": "C:\\mingw\\mingw64\\bin"
+            "problemMatcher": ["$msCompile"],
+            "group": {
+              "kind": "build",
+              "isDefault": true
             }
-        }
+        },
     ]
 }

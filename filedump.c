@@ -1,13 +1,16 @@
-//This code is start at 2020/2/12 during crona-virus events
+//This code is start at 2020/2/12 during corona-virus events
 // 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+
 #define DF_LINEMAX (16)
 #define DF_BINMODE_BYTENUM (4)
 #define DF_HEXFMT "%2.2x   "
 #define DF_DECFMT "%03d  "
 #define DF_HEXDECSPC "%5s"
+#define DF_BINSPC "%8s\t"
 //define support file dump mode
 typedef enum dumpxmode{
     USAGE,  //help message
@@ -38,7 +41,7 @@ char *asciiabl[]={ \
     "SI","DLE","DC1","DC2","DC3",
     "DC4","NAK","SYN","ETB","CAN",
     "EM","SUB","ESC","FS","GS","RS",
-    "US","<SP>","!"};
+    "US","SP","!"};
 
 int main(int argc,char * argv[])
 {
@@ -292,7 +295,7 @@ void printSpace(int cols,FDUMPxmode dpmode)
     {
         for(i=0;i<cols;i++)
         {
-            printf(" \t \t");
+            printf(DF_BINSPC," ");
         }
 
     }else{
