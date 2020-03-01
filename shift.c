@@ -16,7 +16,11 @@ int main(){
 	//signed shift constant  by compiler
 	varBig=(0x87123456 >>32); 
 	//code4output varBig result
-	printf("0x87123456 >>32 %d,0x%8.8x\n",varBig,varBig);
+	printf("varBig=(0x87123456 >>32) %d,0x%8.8x\n",varBig,varBig);
+
+	varBig=(0x87123456 >>40); 
+	//code4output varBig result
+	printf("varBig=(0x87123456 >>40) %d,0x%8.8x\n",varBig,varBig);
 
 	varBig=(0x87123456 >>4); 
 	//code4output varBig result
