@@ -1,13 +1,16 @@
 //2.46 2.51
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
+
 void printfloat(float x1);
 void printdouble(double x1);
 
 void printbin(unsigned char *buf,size_t maxlen);
 void printbyte(unsigned char *p, size_t len);
 void printbyte_reverse(unsigned char *p, size_t len);
-void  print_ulongbin(unsigned long data1,size_t ulen);
+void  print_ulongbin(uint64_t data1,size_t ulen);
+double printfpow2(double dat,  int Ecode1 );
 void missile();
 void missile_st();
 
@@ -48,11 +51,13 @@ typedef union{
 
 int main()
 {
-    printf("patriot missile 0.1s\n");
+    printf("=====long type byte size=%u =====\n",sizeof(long));
+    printf("=======patriot missile 0.1s======\n");
+    printf("=========Using mask==============\n");
     missile();
-
+    printf("\n=========Using struct===========\n");
     //this method is depend on compiler may have compatible problem
-    printf("\n\nUsing struct & union to access float &double elements.\n");
+    printf("Using struct & union to access float &double elements.\n");
     missile_st();
     return 0;
 
@@ -129,37 +134,58 @@ void missile()
     float xf01=0.1f;
     float xf00;
     unsigned int *fp00=(unsigned int *)&xf00;
-    double xd01=(double)1.0/10.0;
+    double xd01=(double)1.0/10.0;//=1.6/16
     double f2d01=xf01;
-    printf("float2double 0.1 toward even\n");
-    printbyte_reverse((unsigned char *)&f2d01,sizeof(xf01));
-
-    printf("float 0.1\n");
+    printf("1. === float 0.1 toward even === \n float0.1 hex =");
+    printf("==================================\n");
+    printf("float2double 0.1 HEX\n ");
+    printbyte_reverse((unsigned char *)&f2d01,sizeof(f2d01));
+    printf("float 0.1 s/E/M\n ");
     printfloat(xf01);
+    printf("float 0.1 HEX\n ");
     printbyte_reverse((unsigned char *)&xf01,sizeof(xf01));
 
-    printf("accurate double 0.1\n");
+    //mimic accurate 0.1
+    printf("==================================\n");
+    printf("accurate double 0.1 s/E/M\n");
     printdouble(xd01);
+    printf("accurate double 0.1 hex\n");    
     printbyte_reverse((unsigned char *)&xd01,sizeof(xd01));
  
+    //difference of float0.1 and double
+    printf("==================================\n");
     printf("error double 0.1-float 0.1 toward even\n");
     f2d01 -= xd01;
+    printf("error double 0.1-float 0.1 s/E/M\n");
     printdouble(f2d01);
+    printf("error double 0.1-float 0.1 HEX\n");
     printbyte_reverse((unsigned char *)&f2d01,sizeof(f2d01));
+    //error & meter error
+    printf("==================================\n");
+    printf("ErrorValue decimal:%E\n",f2d01);
+    printf("==================================\n");
     printf("Metter(t_even)=%lf\n",f2d01*(100.0*3600.0*10.0*2000.0));
  
     //round down
     xf00=xf01;
     *fp00 -=1;
-    printf("float 0.1 round down\n");
+    printf("2. === float 0.1 round down ===\n");
+    printf("==================================\n");
+    printf("float 0.1 r/d s/E/M\n ");
     printfloat(xf00);
+    printf("float 0.1 r/d Hex\n ");
     printbyte_reverse((unsigned char *)&xf00,sizeof(xf00));
 
+    printf("==================================\n");
     f2d01 = xd01-xf00;
-    printf("error double 0.1-float 0.1 toward 0\n");
+    printf("error double 0.1-float 0.1\n");
+    printf("float 0.1 r/d s/E/M\n ");
     printdouble(f2d01);
+    printf("float 0.1 r/d Hex\n ");
     printbyte_reverse((unsigned char *)&f2d01,sizeof(f2d01));
-
+    printf("==================================\n");
+    printf("ErrorValue decimal:%E\n",f2d01);
+    printf("==================================\n");
     printf("Metter(t_0)=%lf\n",f2d01*(100.0*3600.0*10*2000.0));
 
 
@@ -168,96 +194,81 @@ void missile()
 
 #define DF_FSIGN(x) ((x)>>(sizeof(float)*8U-DF_SIGN_BIT)&0x01U)
 #define DF_FEXP(x) ((x)>>(sizeof(float)*8U-DF_SIGN_BIT-DF_FLOAT_EXP_BITS)&0xffU)
-#define DF_FFRAC(x) ((x)&(~(0x0F8UL<<DF_FLOAT_FRAC_BITS)))
+#define DF_FFRAC(x) ((x)&(~(0x0F8ULL<<DF_FLOAT_FRAC_BITS)))
 //#define DF_FMNOR(x)   ((x)|0x01UL<<24)
 
 #define DF_DSIGN(x) ((x)>>(sizeof(double)*8U-DF_SIGN_BIT)&0x01U)
 #define DF_DEXP(x) ((x)>>(sizeof(double)*8U-DF_SIGN_BIT-DF_DOUBLE_EXP_BITS)&0x7ffU)
-#define DF_DFRAC(x) ((x)&(~(0xfffUL<<DF_DOUBLE_EXP_BITS)))
+#define DF_DFRAC(x) ((x)&(~(0xfffULL<<DF_DOUBLE_FRAC_BITS)))
 //#define DF_DMNOR(x)   ((x)|(1UL<<53))
 
 void printfloat(float x1)
 {
     unsigned int *fp=(unsigned int *) &x1;
     unsigned int flt=*fp;
-    unsigned long signe=DF_FSIGN(flt);
-    unsigned long exp=DF_FEXP(flt);
-    unsigned long frac=DF_FFRAC(flt);
-    unsigned long Ecode=0;
-    unsigned long Mcode=0;
-    unsigned long Bias=(1U<<(8-1))-1;
+    uint64_t signe=DF_FSIGN(flt);
+    uint64_t exp=DF_FEXP(flt);
+    uint64_t frac=DF_FFRAC(flt);
+    uint64_t Ecode=0;
+    uint64_t Mcode=0;
+    uint64_t Bias=(1U<<(8-1))-1;
     signed short Ecode1;
     if(exp==0U)
     {
         //denormalized
         Ecode1=-Bias+1;
         Mcode=frac;
-        printf("sign=%c\n",signe!=0? '-' : '+');
-        printf("E=%d\n",Ecode1);
+        // printf("sign=%c\n",signe!=0? '-' : '+');
+        // printf("E=%d\n",Ecode1);
+        // printf("frac=0.");//0.
+        printf("Value=%c",signe!=0? '-' : '+');
+        printf("(2^(%d))*",Ecode1);
         printf("0.");//0.
+        
+
     }else if(exp==0xffUL && frac == 0UL){
-        printf("INF \n");
+        printf("Value=INF \n");
         return;
 
     }else if(exp==0xffUL && frac != 0UL){
         //special INF
-        printf("NAN \n");
+        printf("Value=NAN \n");
         return;
 
     }else{
         //normalized 
         Ecode1=-Bias+exp;
         Mcode =frac;//1 is not add
-        printf("sign=%c\n",signe!=0? '-' : '+');
-        printf("E=%d\n",Ecode1);
+        printf("Value=%c",signe!=0? '-' : '+');
+        printf("(2^(%d))*",Ecode1);
         printf("1.");  //1bit more
     }
     //printf fraction
-    
     print_ulongbin(flt,(sizeof(x1)*8U-DF_FLOAT_EXP_BITS-DF_SIGN_BIT)); 
-
-
-}
-
-void  print_ulongbin(unsigned long data1,size_t ulen)
-{
-    unsigned int ui1;
-    unsigned long mask;
-    unsigned char x=1;
-    for(ui1=0;ui1<ulen;ui1++)
-    {
-        if((ui1%4)==0)
-        {
-            printf(" ");
-        }
-        mask = 0x01UL<<(ulen-ui1-1);
-        x=((data1&mask)!=0);
-        printf("%u",x);
-
-    }
-    printf("\n");
+    //printf("\nVaule(2^n)=%g*2^%d\n",x1*pow(2,abs(Ecode1)),Ecode1);
+    printfpow2(x1,Ecode1);
 
 }
 
 void printdouble(double x1)
 {
-    unsigned long *fp=(unsigned long *) &x1;
-    unsigned long flt=*fp;
-    unsigned long signe=DF_DSIGN(flt);
-    unsigned long exp=DF_DEXP(flt);
-    unsigned long frac=DF_DFRAC(flt);
-    unsigned long Ecode=0;
-    unsigned long Mcode=0;
+    uint64_t *fp=(uint64_t *) &x1;
+    uint64_t flt=*fp;
+    uint64_t signe=DF_DSIGN(flt);
+    uint64_t exp=DF_DEXP(flt);
+    uint64_t frac=DF_DFRAC(flt);
+    uint64_t Ecode=0;
+    uint64_t Mcode=0;
     //w=11
-    unsigned long Bias=(1U<<(11-1))-1;
+    uint64_t Bias=(1U<<(11-1))-1;
     signed short Ecode1;
     if(exp==0U)
     {
         //denormalized
         Ecode1=-Bias+1;
         Mcode=frac;
-        printf("sign=%c\n",signe!=0? '-' : '+');
-        printf("E=%d\n",Ecode1);
+        printf("Value=%c",signe!=0? '-' : '+');
+        printf("(2^(%d))*",Ecode1);
         printf("0.");//0.
     }else if(exp==0x7ffUL && frac == 0UL){
         printf("INF \n");
@@ -272,15 +283,47 @@ void printdouble(double x1)
         //normalized 
         Ecode1=-Bias+exp;
         Mcode =frac;//1 is not add
-        printf("sign=%c\n",signe!=0? '-' : '+');
-        printf("E=%d\n",Ecode1);
+        printf("sign=%c",signe!=0? '-' : '+');
+        printf("(2^(%d))*",Ecode1);
         printf("1.");  //1bit more
     }
     //printf fraction
     print_ulongbin(flt,(sizeof(x1)*8U-DF_DOUBLE_EXP_BITS-DF_SIGN_BIT)); 
-    
+    //printf("\nVaule(2^n)=%g*2^%d\n",x1*pow(2,abs(Ecode1)),Ecode1);
+    printfpow2(x1,Ecode1);
+}
+
+double printfpow2(double dat,  int Ecode1 )
+{
+    if(Ecode1<0)
+    {
+        printf("Vaule(2^n)=%.20g*2^%d\n",dat*pow(2,-Ecode1),Ecode1);
+    }else{
+        printf("Vaule(2^n)=%.20g*2^%d\n",dat/pow(2,Ecode1),Ecode1);        
+    }
 
 }
+
+void  print_ulongbin(uint64_t data1,size_t ulen)
+{
+    unsigned int ui1;
+    uint64_t mask;
+    unsigned char x=1;
+    for(ui1=0;ui1<ulen;ui1++)
+    {
+        if((ui1%4)==0)
+        {
+            printf(" ");
+        }
+        mask = ((uint64_t)0x01ULL)<<(ulen-ui1-1);
+        x=((data1&mask)!=0);
+        printf("%u",x);
+
+    }
+    printf("\n");
+
+}
+
 
 void printbyte(unsigned char *p, size_t len)
 {
