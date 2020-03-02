@@ -24,7 +24,7 @@
               "/Zi",
               "/EHsc",
               "/Fe:",
-              "${fileDirname}\\${fileBasenameNoExtension}.exe",
+              "${fileDirname}\\${fileBasenameNoExtension}64.exe",
               "${file}"
             ],
             "problemMatcher": ["$msCompile"],

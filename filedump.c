@@ -55,7 +55,7 @@ int main(int argc,char * argv[])
     {
         //not input filename 
         dpxmode =USAGE;
-    }else{
+    }else{ //>=3
         dpxmode =getdpmode(argv[1]);
     }
 
